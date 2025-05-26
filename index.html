@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My Shop (मेरो पसल)</title>
+<style>
+  body { font-family: Arial, sans-serif; max-width:600px; margin:20px auto; background:#f8f9fa; padding:10px 20px; }
+  h1,h2 { color:#333; }
+  input, button { display:block; width:100%; padding:10px; margin:8px 0; font-size:16px; box-sizing:border-box; }
+  button { background:#28a745; border:none; color:#fff; cursor:pointer; border-radius:4px; }
+  button:hover { background:#218838; }
+  ul { list-style:none; padding:0; }
+  li { background:#fff; margin-bottom:10px; padding:10px; border-radius:6px; border:1px solid #ddd; }
+  img { margin-top:5px; max-width:120px; max-height:120px; border-radius:4px; border:1px solid #ccc; }
+</style>
+</head>
+<body>
+
+<!-- Password Lock Screen -->
+<div id="lock-screen">
+  <h2>🔐 Enter Password to Access Shop (पसल खोल्न पासवर्ड हाल्नुहोस्)</h2>
+  <input type="password" id="password-input" placeholder="Enter Password (पासवर्ड हाल्नुहोस्)" />
+  <button onclick="checkPassword()">Unlock (खोल्नुहोस्)</button>
+</div>
+
+<!-- Main Content -->
+<div id="main-content" style="display:none;">
+
+  <h1>🛒 My Shop (मेरो पसल)</h1>
+
+  <section id="item-section">
+    <h2>➕ Add Item (सामान थप्नुहोस्)</h2>
+    <input type="text" id="item-name" placeholder="Item name (सामानको नाम)" />
+    <input type="number" id="item-qty" placeholder="Quantity (मात्रा)" />
+    <input type="number" id="item-price" placeholder="Price per unit (प्रति एकाइ मूल्य)" />
+    <input type="file" id="item-photo" accept="image/*" />
+    <button onclick="addItem()">Add Item (थप्नुहोस्)</button>
+
+    <h2>📦 Items in Shop (पसलमा रहेका सामानहरू)</h2>
+    <ul id="item-list"></ul>
+  </section>
+
+  <section id="credit-section">
+    <h2>➕ Add Customer Credit (ग्राहकको बाँकी रकम थप्नुहोस्)</h2>
+    <input type="text" id="customer-name" placeholder="Customer Name (ग्राहकको नाम)" />
+    <input type="text" id="customer-item" placeholder="Item Bought (किनिएको सामान)" />
+    <input type="number" id="customer-amount" placeholder="Amount Owed (Rs.) (बाँकी रकम रु.)" />
+    <button onclick="addCredit()">Add Credit (थप्नुहोस्)</button>
+
+    <h2>🧾 Customers Who Owe Money (ग्राहक जसले पैसा दिन बाँकी छ)</h2>
+    <ul id="credit-list"></ul>
+  </section>
+
+</div>
+
+<script>
+  const shopPassword = "1234";
+
+  function checkPassword() {
+    const input = document.getElementById("password-input").value;
+    if (input === shopPassword) {
+      document.getElementById("lock-screen").style.display = "none";
+      document.getElementById("main-content").style.display = "block";
+    } else {
+      alert("Wrong password! (गलत पासवर्ड!)");
+    }
+  }
+
+  let items = [];
+  let credits = [];
+
+  function addItem() {
+    const name = document.getElementById("item-name").value.trim();
+    const qty = document.getElementById("item-qty").value.trim();
+    const price = document.getElementById("item-price").value.trim();
+    const photoInput = document.getElementById("item-photo");
+    const photoFile = photoInput.files[0];
+
+    if (!name || !qty || !price) {
+      alert("Please fill all fields! (सबै फिल्डहरू भर्नुहोस्!)");
+      return;
+    }
+
+    if (photoFile) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        items.push({ name, qty, price, photo: e.target.result });
+        showItems();
+      };
+      reader.readAsDataURL(photoFile);
+    } else {
+      items.push({ name, qty, price, photo: null });
+      showItems();
+    }
+
+    document.getElementById("item-name").value = "";
+    document.getElementById("item-qty").value = "";
+    document.getElementById("item-price").value = "";
+    document.getElementById("item-photo").value = "";
+  }
+
+  function showItems() {
+    const list = document.getElementById("item-list");
+    list.innerHTML = "";
+    items.forEach((item, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${item.name}</strong> - ${item.qty} pcs @ Rs. ${item.price}
+        ${item.photo ? `<br><img src="${item.photo}" alt="Item photo" />` : ""}
+        <br><button onclick="deleteItem(${i})">🗑️ Delete (हटाउनुहोस्)</button>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  function deleteItem(index) {
+    if (confirm("Are you sure to delete this item? (के तपाईं यो सामान हटाउन निश्चित हुनुहुन्छ?)")) {
+      items.splice(index, 1);
+      showItems();
+    }
+  }
+
+  function addCredit() {
+    const name = document.getElementById("customer-name").value.trim();
+    const item = document.getElementById("customer-item").value.trim();
+    const amount = document.getElementById("customer-amount").value.trim();
+
+    if (!name || !item || !amount) {
+      alert("Please fill all credit fields! (सबै बाँकी विवरणहरू भर्नुहोस्!)");
+      return;
+    }
+
+    credits.push({ name, item, amount, paid: false });
+    showCredits();
+
+    document.getElementById("customer-name").value = "";
+    document.getElementById("customer-item").value = "";
+    document.getElementById("customer-amount").value = "";
+  }
+
+  function showCredits() {
+    const list = document.getElementById("credit-list");
+    list.innerHTML = "";
+    credits.forEach((credit, i) => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${credit.name}</strong> - ${credit.item} - Rs. ${credit.amount}
+        ${credit.paid ? " ✅ Paid (भुक्तानी भयो)" : `<button onclick="markPaid(${i})">Mark as Paid (भुक्तानी भयो)</button>`}
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  function markPaid(index) {
+    credits[index].paid = true;
+    showCredits();
+  }
+</script>
+
+</body>
+</html>
