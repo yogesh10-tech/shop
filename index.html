@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <head>
+  <!-- ... your existing meta tags and styles ... -->
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+</head>
+
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Yogesh Shop (मेरो पसल)</title>
@@ -210,6 +218,18 @@
   function toggleDarkMode() {
     document.body.classList.toggle("dark");
   }
+  // Your Firebase config and initialization
+const firebaseConfig = {
+  apiKey: "AIzaSyAYIvpcSL5BAvR-pQd1b2XbYquAjy9YHjM",
+  authDomain: "yogeshshop-5099f.firebaseapp.com",
+  projectId: "yogeshshop-5099f",
+  storageBucket: "yogeshshop-5099f.firebasestorage.app",
+  messagingSenderId: "66642396591",
+  appId: "1:66642396591:web:0ef5fb3db1fad50d49db5a"
+};
+
+firebase.initializeApp(firebaseConfig);
+
 </script>
 
 </body>
