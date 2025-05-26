@@ -1,160 +1,214 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>My Shop (मेरो पसल)</title>
-<style>
-  body { font-family: Arial, sans-serif; max-width:600px; margin:20px auto; background:#f8f9fa; padding:10px 20px; }
-  h1,h2 { color:#333; }
-  input, button { display:block; width:100%; padding:10px; margin:8px 0; font-size:16px; box-sizing:border-box; }
-  button { background:#28a745; border:none; color:#fff; cursor:pointer; border-radius:4px; }
-  button:hover { background:#218838; }
-  ul { list-style:none; padding:0; }
-  li { background:#fff; margin-bottom:10px; padding:10px; border-radius:6px; border:1px solid #ddd; }
-  img { margin-top:5px; max-width:120px; max-height:120px; border-radius:4px; border:1px solid #ccc; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yogesh Shop (मेरो पसल)</title>
+  <style>
+    :root {
+      --bg-color: #f4f4f4;
+      --text-color: #333;
+      --box-color: #fff;
+      --highlight: #00ffcc;
+      --btn-color: #00ffcc;
+      --plus-btn-color: #ff4d4d;
+    }
+    body.dark {
+      --bg-color: #121212;
+      --text-color: #f0f0f0;
+      --box-color: #1e1e1e;
+      --highlight: #00ffaa;
+      --btn-color: #00ffaa;
+      --plus-btn-color: #ff6666;
+    }
+
+    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+    body { margin: 0; background: var(--bg-color); color: var(--text-color); }
+    h1, h2 { text-align: center; }
+    .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+    header { background: #222; color: white; padding: 15px; text-align: center; border-radius: 10px; box-shadow: 0 0 20px var(--highlight); }
+
+    .form-box, .item-box, .calculator-box, .customer-box, .loan-box {
+      background: var(--box-color);
+      padding: 15px;
+      margin-top: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px var(--highlight);
+    }
+
+    input, button {
+      padding: 12px;
+      margin: 8px 0;
+      width: 100%;
+      max-width: 350px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    input { background: #fff; }
+    button {
+      background: var(--btn-color);
+      color: #000;
+      cursor: pointer;
+    }
+
+    .plus-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      font-size: 24px;
+      background: var(--plus-btn-color);
+      color: white;
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--plus-btn-color);
+    }
+
+    .section-title {
+      font-size: 1.2em;
+      text-align: center;
+      margin-bottom: 10px;
+      color: var(--highlight);
+    }
+
+    .calc-result { font-size: 2em; text-align: center; }
+    .welcome-screen {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: #111; color: white;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 2em; z-index: 1000;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Password Lock Screen -->
-<div id="lock-screen">
-  <h2>🔐 Enter Password to Access Shop (पसल खोल्न पासवर्ड हाल्नुहोस्)</h2>
-  <input type="password" id="password-input" placeholder="Enter Password (पासवर्ड हाल्नुहोस्)" />
-  <button onclick="checkPassword()">Unlock (खोल्नुहोस्)</button>
+<div id="lock-screen" class="welcome-screen">
+  <div>
+    <h2>Enter Password (पासवर्ड लेख्नुहोस्)</h2>
+    <input type="password" id="password" placeholder="Enter password">
+    <button onclick="checkPassword()">Unlock (अनलॉक)</button>
+  </div>
 </div>
 
-<!-- Main Content -->
-<div id="main-content" style="display:none;">
+<div id="main-content" class="container" style="display:none;">
+  <header>
+    <h1>Welcome to Yogesh Shop (स्वागत छ)</h1>
+    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+  </header>
 
-  <h1>🛒 My Shop (मेरो पसल)</h1>
-
-  <section id="item-section">
-    <h2>➕ Add Item (सामान थप्नुहोस्)</h2>
-    <input type="text" id="item-name" placeholder="Item name (सामानको नाम)" />
-    <input type="number" id="item-qty" placeholder="Quantity (मात्रा)" />
-    <input type="number" id="item-price" placeholder="Price per unit (प्रति एकाइ मूल्य)" />
-    <input type="file" id="item-photo" accept="image/*" />
+  <div class="form-box">
+    <h3 class="section-title">Add Item (सामान थप्नुहोस्)</h3>
+    <input type="text" id="itemName" placeholder="Item name (सामानको नाम)">
+    <input type="number" id="itemQty" placeholder="Quantity (मात्रा)">
+    <input type="number" id="itemPrice" placeholder="Price per unit (प्रति एकाइ मूल्य)">
     <button onclick="addItem()">Add Item (थप्नुहोस्)</button>
+  </div>
 
-    <h2>📦 Items in Shop (पसलमा रहेका सामानहरू)</h2>
-    <ul id="item-list"></ul>
-  </section>
+  <div class="item-box">
+    <h3 class="section-title">Items in Shop (पसलका सामानहरू)</h3>
+    <div id="itemsInShop"></div>
+  </div>
 
-  <section id="credit-section">
-    <h2>➕ Add Customer Credit (ग्राहकको बाँकी रकम थप्नुहोस्)</h2>
-    <input type="text" id="customer-name" placeholder="Customer Name (ग्राहकको नाम)" />
-    <input type="text" id="customer-item" placeholder="Item Bought (किनिएको सामान)" />
-    <input type="number" id="customer-amount" placeholder="Amount Owed (Rs.) (बाँकी रकम रु.)" />
-    <button onclick="addCredit()">Add Credit (थप्नुहोस्)</button>
+  <div class="customer-box">
+    <h3 class="section-title">Add Customer Credit (ग्राहकको बाँकी रकम)</h3>
+    <input type="text" id="customerName" placeholder="Customer Name (नाम)">
+    <input type="text" id="customerItem" placeholder="Item Name (सामान)">
+    <input type="number" id="owedAmount" placeholder="Owed Amount (रकम)">
+    <button onclick="addCustomerCredit()">Add Credit (थप्नुहोस्)</button>
+    <div id="creditList"></div>
+  </div>
 
-    <h2>🧾 Customers Who Owe Money (ग्राहक जसले पैसा दिन बाँकी छ)</h2>
-    <ul id="credit-list"></ul>
-  </section>
+  <div class="loan-box">
+    <h3 class="section-title">Loan (सापटी)</h3>
+    <input type="number" id="loanAmount" placeholder="Enter loan amount">
+    <button onclick="addLoan()">Add Loan (थप्नुहोस्)</button>
+    <input type="number" id="payLoan" placeholder="Pay amount">
+    <button onclick="payLoanAmount()">Pay Loan (तिर्नुहोस्)</button>
+    <div id="loanDisplay">Total Loan: Rs. 0</div>
+  </div>
 
+  <div class="calculator-box">
+    <h3 class="section-title">Calculator (क्याल्कुलेटर)</h3>
+    <input type="text" id="calcExpression" placeholder="Enter expression e.g. 10+20+30">
+    <button onclick="calculateExpression()">Calculate</button>
+    <p class="calc-result" id="calc-result">Result:</p>
+  </div>
 </div>
 
 <script>
-  const shopPassword = "1234";
+  const correctPassword = "1234";
+  let items = [], credits = [], totalLoan = 0;
 
   function checkPassword() {
-    const input = document.getElementById("password-input").value;
-    if (input === shopPassword) {
+    const input = document.getElementById("password").value;
+    if (input === correctPassword) {
       document.getElementById("lock-screen").style.display = "none";
       document.getElementById("main-content").style.display = "block";
     } else {
-      alert("Wrong password! (गलत पासवर्ड!)");
+      alert("Wrong password (गलत पासवर्ड)");
     }
   }
-
-  let items = [];
-  let credits = [];
 
   function addItem() {
-    const name = document.getElementById("item-name").value.trim();
-    const qty = document.getElementById("item-qty").value.trim();
-    const price = document.getElementById("item-price").value.trim();
-    const photoInput = document.getElementById("item-photo");
-    const photoFile = photoInput.files[0];
+    const name = document.getElementById("itemName").value;
+    const qty = parseInt(document.getElementById("itemQty").value);
+    const price = parseFloat(document.getElementById("itemPrice").value);
+    if (!name || !qty || !price) return alert("Fill all item fields");
+    items.push({ name, qty, price, total: qty * price });
+    displayItems();
+  }
 
-    if (!name || !qty || !price) {
-      alert("Please fill all fields! (सबै फिल्डहरू भर्नुहोस्!)");
-      return;
+  function displayItems() {
+    const div = document.getElementById("itemsInShop");
+    div.innerHTML = items.map(item => `${item.name}: ${item.qty} x Rs.${item.price} = Rs.${item.total}`).join('<br>');
+  }
+
+  function addCustomerCredit() {
+    const name = document.getElementById("customerName").value;
+    const item = document.getElementById("customerItem").value;
+    const owed = parseFloat(document.getElementById("owedAmount").value);
+    if (!name || !item || !owed) return alert("Fill all credit fields");
+    credits.push({ name, item, owed });
+    displayCredits();
+  }
+
+  function displayCredits() {
+    const div = document.getElementById("creditList");
+    div.innerHTML = credits.map(c => `${c.name} (for ${c.item}): Rs.${c.owed}`).join('<br>');
+  }
+
+  function addLoan() {
+    const amount = parseFloat(document.getElementById("loanAmount").value);
+    if (!amount) return alert("Enter valid loan amount");
+    totalLoan += amount;
+    updateLoanDisplay();
+  }
+
+  function payLoanAmount() {
+    const payment = parseFloat(document.getElementById("payLoan").value);
+    if (!payment) return alert("Enter amount to pay");
+    totalLoan -= payment;
+    if (totalLoan < 0) totalLoan = 0;
+    updateLoanDisplay();
+  }
+
+  function updateLoanDisplay() {
+    document.getElementById("loanDisplay").innerText = `Total Loan: Rs. ${totalLoan}`;
+  }
+
+  function calculateExpression() {
+    try {
+      const result = eval(document.getElementById("calcExpression").value);
+      document.getElementById("calc-result").innerText = `Result: Rs. ${result}`;
+    } catch (e) {
+      alert("Invalid expression");
     }
-
-    if (photoFile) {
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        items.push({ name, qty, price, photo: e.target.result });
-        showItems();
-      };
-      reader.readAsDataURL(photoFile);
-    } else {
-      items.push({ name, qty, price, photo: null });
-      showItems();
-    }
-
-    document.getElementById("item-name").value = "";
-    document.getElementById("item-qty").value = "";
-    document.getElementById("item-price").value = "";
-    document.getElementById("item-photo").value = "";
   }
 
-  function showItems() {
-    const list = document.getElementById("item-list");
-    list.innerHTML = "";
-    items.forEach((item, i) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <strong>${item.name}</strong> - ${item.qty} pcs @ Rs. ${item.price}
-        ${item.photo ? `<br><img src="${item.photo}" alt="Item photo" />` : ""}
-        <br><button onclick="deleteItem(${i})">🗑️ Delete (हटाउनुहोस्)</button>
-      `;
-      list.appendChild(li);
-    });
-  }
-
-  function deleteItem(index) {
-    if (confirm("Are you sure to delete this item? (के तपाईं यो सामान हटाउन निश्चित हुनुहुन्छ?)")) {
-      items.splice(index, 1);
-      showItems();
-    }
-  }
-
-  function addCredit() {
-    const name = document.getElementById("customer-name").value.trim();
-    const item = document.getElementById("customer-item").value.trim();
-    const amount = document.getElementById("customer-amount").value.trim();
-
-    if (!name || !item || !amount) {
-      alert("Please fill all credit fields! (सबै बाँकी विवरणहरू भर्नुहोस्!)");
-      return;
-    }
-
-    credits.push({ name, item, amount, paid: false });
-    showCredits();
-
-    document.getElementById("customer-name").value = "";
-    document.getElementById("customer-item").value = "";
-    document.getElementById("customer-amount").value = "";
-  }
-
-  function showCredits() {
-    const list = document.getElementById("credit-list");
-    list.innerHTML = "";
-    credits.forEach((credit, i) => {
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <strong>${credit.name}</strong> - ${credit.item} - Rs. ${credit.amount}
-        ${credit.paid ? " ✅ Paid (भुक्तानी भयो)" : `<button onclick="markPaid(${i})">Mark as Paid (भुक्तानी भयो)</button>`}
-      `;
-      list.appendChild(li);
-    });
-  }
-
-  function markPaid(index) {
-    credits[index].paid = true;
-    showCredits();
+  function toggleDarkMode() {
+    document.body.classList.toggle("dark");
   }
 </script>
 
