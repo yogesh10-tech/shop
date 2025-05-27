@@ -1,236 +1,260 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <head>
-  <!-- ... your existing meta tags and styles ... -->
-
-  <!-- Firebase SDKs -->
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-</head>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yogesh Shop (मेरो पसल)</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yogesh Shop</title>
   <style>
-    :root {
-      --bg-color: #f4f4f4;
-      --text-color: #333;
-      --box-color: #fff;
-      --highlight: #00ffcc;
-      --btn-color: #00ffcc;
-      --plus-btn-color: #ff4d4d;
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
     }
-    body.dark {
-      --bg-color: #121212;
-      --text-color: #f0f0f0;
-      --box-color: #1e1e1e;
-      --highlight: #00ffaa;
-      --btn-color: #00ffaa;
-      --plus-btn-color: #ff6666;
+    .dark-mode {
+      background-color: #121212;
+      color: #f4f4f4;
     }
-
-    * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
-    body { margin: 0; background: var(--bg-color); color: var(--text-color); }
-    h1, h2 { text-align: center; }
-    .container { width: 100%; max-width: 1000px; margin: 0 auto; padding: 20px; }
-
-    header { background: #222; color: white; padding: 15px; text-align: center; border-radius: 10px; box-shadow: 0 0 20px var(--highlight); }
-
-    .form-box, .item-box, .calculator-box, .customer-box, .loan-box {
-      background: var(--box-color);
-      padding: 15px;
-      margin-top: 20px;
+    header {
+      background: #673ab7;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    .container {
+      padding: 1rem;
+    }
+    .section {
+      margin-bottom: 1.5rem;
+      padding: 1rem;
       border-radius: 10px;
-      box-shadow: 0 0 10px var(--highlight);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: white;
     }
-
-    input, button {
-      padding: 12px;
-      margin: 8px 0;
+    .dark-mode .section {
+      background: #1e1e1e;
+    }
+    input, button, textarea {
+      padding: 0.5rem;
+      margin: 0.3rem 0;
       width: 100%;
-      max-width: 350px;
-      border: none;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
       border-radius: 5px;
-      font-size: 1em;
     }
-    input { background: #fff; }
     button {
-      background: var(--btn-color);
-      color: #000;
+      background-color: #4caf50;
+      color: white;
+      border: none;
       cursor: pointer;
     }
-
-    .plus-btn {
+    button:hover {
+      background-color: #45a049;
+    }
+    .dark-mode button {
+      background-color: #bb86fc;
+      color: #121212;
+    }
+    .toggle-dark {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .calculator-screen {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 50px;
-      height: 50px;
-      font-size: 24px;
-      background: var(--plus-btn-color);
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #fff;
+      z-index: 1000;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .dark-mode .calculator-screen {
+      background: #1e1e1e;
       color: white;
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--plus-btn-color);
     }
-
-    .section-title {
-      font-size: 1.2em;
-      text-align: center;
-      margin-bottom: 10px;
-      color: var(--highlight);
-    }
-
-    .calc-result { font-size: 2em; text-align: center; }
-    .welcome-screen {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: #111; color: white;
-      display: flex; justify-content: center; align-items: center;
-      font-size: 2em; z-index: 1000;
+    .password-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: #673ab7;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
     }
   </style>
 </head>
 <body>
-
-<div id="lock-screen" class="welcome-screen">
+<div class="password-screen" id="passwordScreen">
   <div>
-    <h2>Enter Password (पासवर्ड लेख्नुहोस्)</h2>
-    <input type="password" id="password" placeholder="Enter password">
-    <button onclick="checkPassword()">Unlock (अनलॉक)</button>
+    <h2 style="color:white">🔒 Enter Password</h2>
+    <input type="password" id="passwordInput" placeholder="Password" />
+    <button onclick="checkPassword()">Enter</button>
   </div>
 </div>
 
-<div id="main-content" class="container" style="display:none;">
-  <header>
-    <h1>Welcome to Yogesh Shop (स्वागत छ)</h1>
-    <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
-  </header>
+<header>
+  <h1>🛒 Yogesh Shop | योगेश किराना</h1>
+</header>
 
-  <div class="form-box">
-    <h3 class="section-title">Add Item (सामान थप्नुहोस्)</h3>
-    <input type="text" id="itemName" placeholder="Item name (सामानको नाम)">
-    <input type="number" id="itemQty" placeholder="Quantity (मात्रा)">
-    <input type="number" id="itemPrice" placeholder="Price per unit (प्रति एकाइ मूल्य)">
-    <button onclick="addItem()">Add Item (थप्नुहोस्)</button>
+<div class="toggle-dark">
+  <button onclick="toggleDarkMode()">🌙 Toggle Dark Mode</button>
+</div>
+
+<div class="container" id="mainContent" style="display:none">
+
+  <div class="section">
+    <h2>➕ Add Item | सामान थप्नुहोस्</h2>
+    <input type="text" id="itemName" placeholder="Item Name / सामान" />
+    <input type="number" id="itemQty" placeholder="Quantity / परिमाण" />
+    <input type="number" id="itemPrice" placeholder="Price / मूल्य" />
+    <button onclick="addItem()">Add Item</button>
+    <div id="itemList"></div>
   </div>
 
-  <div class="item-box">
-    <h3 class="section-title">Items in Shop (पसलका सामानहरू)</h3>
-    <div id="itemsInShop"></div>
-  </div>
-
-  <div class="customer-box">
-    <h3 class="section-title">Add Customer Credit (ग्राहकको बाँकी रकम)</h3>
-    <input type="text" id="customerName" placeholder="Customer Name (नाम)">
-    <input type="text" id="customerItem" placeholder="Item Name (सामान)">
-    <input type="number" id="owedAmount" placeholder="Owed Amount (रकम)">
-    <button onclick="addCustomerCredit()">Add Credit (थप्नुहोस्)</button>
+  <div class="section">
+    <h2>📒 Customer Credit | ग्राहक ऋण</h2>
+    <input type="text" id="creditCustomer" placeholder="Customer Name" />
+    <input type="text" id="creditItemName" placeholder="Item Name" />
+    <input type="number" id="creditAmount" placeholder="Amount" />
+    <button onclick="addCredit()">Add Credit</button>
     <div id="creditList"></div>
   </div>
 
-  <div class="loan-box">
-    <h3 class="section-title">Loan (सापटी)</h3>
-    <input type="number" id="loanAmount" placeholder="Enter loan amount">
-    <button onclick="addLoan()">Add Loan (थप्नुहोस्)</button>
-    <input type="number" id="payLoan" placeholder="Pay amount">
-    <button onclick="payLoanAmount()">Pay Loan (तिर्नुहोस्)</button>
-    <div id="loanDisplay">Total Loan: Rs. 0</div>
+  <div class="section">
+    <h2>💸 Loan Section | ऋण</h2>
+    <input type="number" id="loanAmount" placeholder="Loan Amount" />
+    <button onclick="addLoan()">Add Loan</button>
+    <input type="number" id="loanPaid" placeholder="Loan Paid" />
+    <button onclick="payLoan()">Pay Loan</button>
+    <div id="loanDisplay">Total Loan: Rs <span id="loanTotal">0</span></div>
   </div>
 
-  <div class="calculator-box">
-    <h3 class="section-title">Calculator (क्याल्कुलेटर)</h3>
-    <input type="text" id="calcExpression" placeholder="Enter expression e.g. 10+20+30">
-    <button onclick="calculateExpression()">Calculate</button>
-    <p class="calc-result" id="calc-result">Result:</p>
+  <div class="section">
+    <h2>🧮 Calculator</h2>
+    <button onclick="showCalculator()">Open Calculator</button>
+  </div>
+
+</div>
+
+<div class="calculator-screen" id="calcScreen">
+  <input id="calcDisplay" readonly style="font-size: 2rem; text-align:center;" />
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 80%; max-width: 300px;">
+    <button onclick="calcInput('7')">7</button>
+    <button onclick="calcInput('8')">8</button>
+    <button onclick="calcInput('9')">9</button>
+    <button onclick="calcInput('+')">+</button>
+    <button onclick="calcInput('4')">4</button>
+    <button onclick="calcInput('5')">5</button>
+    <button onclick="calcInput('6')">6</button>
+    <button onclick="calcInput('-')">-</button>
+    <button onclick="calcInput('1')">1</button>
+    <button onclick="calcInput('2')">2</button>
+    <button onclick="calcInput('3')">3</button>
+    <button onclick="calcInput('*')">*</button>
+    <button onclick="calcInput('0')">0</button>
+    <button onclick="calcInput('.')">.</button>
+    <button onclick="calcCalculate()">=</button>
+    <button onclick="calcInput('/')">/</button>
+    <button onclick="calcClear()">C</button>
+    <button onclick="hideCalculator()" style="grid-column: span 3;">Close</button>
   </div>
 </div>
 
-<script>
-  const correctPassword = "1234";
-  let items = [], credits = [], totalLoan = 0;
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyAYIvpcSL5BAvR-pQd1b2XbYquAjy9YHjM",
+    authDomain: "yogeshshop-5099f.firebaseapp.com",
+    projectId: "yogeshshop-5099f",
+    storageBucket: "yogeshshop-5099f.appspot.com",
+    messagingSenderId: "66642396591",
+    appId: "1:66642396591:web:0ef5fb3db1fad50d49db5a"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+</script>
+
+<script>
   function checkPassword() {
-    const input = document.getElementById("password").value;
-    if (input === correctPassword) {
-      document.getElementById("lock-screen").style.display = "none";
-      document.getElementById("main-content").style.display = "block";
+    const pw = document.getElementById('passwordInput').value;
+    if (pw === '1234') {
+      document.getElementById('passwordScreen').style.display = 'none';
+      document.getElementById('mainContent').style.display = 'block';
     } else {
-      alert("Wrong password (गलत पासवर्ड)");
+      alert('Wrong Password');
+    }
+  }
+  function toggleDarkMode() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+  function showCalculator() {
+    document.getElementById("calcScreen").style.display = "flex";
+  }
+  function hideCalculator() {
+    document.getElementById("calcScreen").style.display = "none";
+  }
+  function calcInput(val) {
+    document.getElementById("calcDisplay").value += val;
+  }
+  function calcClear() {
+    document.getElementById("calcDisplay").value = '';
+  }
+  function calcCalculate() {
+    try {
+      document.getElementById("calcDisplay").value = eval(document.getElementById("calcDisplay").value);
+    } catch {
+      alert("Invalid input");
     }
   }
 
   function addItem() {
     const name = document.getElementById("itemName").value;
-    const qty = parseInt(document.getElementById("itemQty").value);
-    const price = parseFloat(document.getElementById("itemPrice").value);
-    if (!name || !qty || !price) return alert("Fill all item fields");
-    items.push({ name, qty, price, total: qty * price });
-    displayItems();
+    const qty = document.getElementById("itemQty").value;
+    const price = document.getElementById("itemPrice").value;
+    const list = document.getElementById("itemList");
+    const div = document.createElement("div");
+    div.textContent = `📦 ${name} x${qty} = Rs ${price}`;
+    list.appendChild(div);
   }
 
-  function displayItems() {
-    const div = document.getElementById("itemsInShop");
-    div.innerHTML = items.map(item => `${item.name}: ${item.qty} x Rs.${item.price} = Rs.${item.total}`).join('<br>');
+  function addCredit() {
+    const name = document.getElementById("creditCustomer").value;
+    const item = document.getElementById("creditItemName").value;
+    const amount = document.getElementById("creditAmount").value;
+    const list = document.getElementById("creditList");
+    const div = document.createElement("div");
+    const paidBtn = document.createElement("button");
+    paidBtn.textContent = "Paid";
+    paidBtn.onclick = () => div.remove();
+    div.textContent = `👤 ${name} (${item}) owes Rs ${amount} `;
+    div.appendChild(paidBtn);
+    list.appendChild(div);
   }
 
-  function addCustomerCredit() {
-    const name = document.getElementById("customerName").value;
-    const item = document.getElementById("customerItem").value;
-    const owed = parseFloat(document.getElementById("owedAmount").value);
-    if (!name || !item || !owed) return alert("Fill all credit fields");
-    credits.push({ name, item, owed });
-    displayCredits();
-  }
-
-  function displayCredits() {
-    const div = document.getElementById("creditList");
-    div.innerHTML = credits.map(c => `${c.name} (for ${c.item}): Rs.${c.owed}`).join('<br>');
-  }
-
+  let loan = 0;
   function addLoan() {
-    const amount = parseFloat(document.getElementById("loanAmount").value);
-    if (!amount) return alert("Enter valid loan amount");
-    totalLoan += amount;
-    updateLoanDisplay();
+    loan += Number(document.getElementById("loanAmount").value);
+    document.getElementById("loanTotal").textContent = loan;
   }
-
-  function payLoanAmount() {
-    const payment = parseFloat(document.getElementById("payLoan").value);
-    if (!payment) return alert("Enter amount to pay");
-    totalLoan -= payment;
-    if (totalLoan < 0) totalLoan = 0;
-    updateLoanDisplay();
+  function payLoan() {
+    loan -= Number(document.getElementById("loanPaid").value);
+    document.getElementById("loanTotal").textContent = loan;
   }
-
-  function updateLoanDisplay() {
-    document.getElementById("loanDisplay").innerText = `Total Loan: Rs. ${totalLoan}`;
-  }
-
-  function calculateExpression() {
-    try {
-      const result = eval(document.getElementById("calcExpression").value);
-      document.getElementById("calc-result").innerText = `Result: Rs. ${result}`;
-    } catch (e) {
-      alert("Invalid expression");
-    }
-  }
-
-  function toggleDarkMode() {
-    document.body.classList.toggle("dark");
-  }
-  // Your Firebase config and initialization
-const firebaseConfig = {
-  apiKey: "AIzaSyAYIvpcSL5BAvR-pQd1b2XbYquAjy9YHjM",
-  authDomain: "yogeshshop-5099f.firebaseapp.com",
-  projectId: "yogeshshop-5099f",
-  storageBucket: "yogeshshop-5099f.firebasestorage.app",
-  messagingSenderId: "66642396591",
-  appId: "1:66642396591:web:0ef5fb3db1fad50d49db5a"
-};
-
-firebase.initializeApp(firebaseConfig);
-
 </script>
-
 </body>
 </html>
