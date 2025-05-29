@@ -90,16 +90,19 @@
       align-items: center;
       justify-content: center;
       z-index: 9999;
+      flex-direction: column;
+    }
+    .password-screen h2 {
+      color: white;
     }
   </style>
 </head>
 <body>
 <div class="password-screen" id="passwordScreen">
-  <div>
-    <h2 style="color:white">🔒 Enter Password</h2>
-    <input type="password" id="passwordInput" placeholder="Password" />
-    <button onclick="checkPassword()">Enter</button>
-  </div>
+  <h2>🔒 Welcome to Yogesh Shop</h2>
+  <p style="color:white">Enter password to continue</p>
+  <input type="password" id="passwordInput" placeholder="Password" />
+  <button onclick="checkPassword()">Enter</button>
 </div>
 
 <header>
@@ -111,7 +114,6 @@
 </div>
 
 <div class="container" id="mainContent" style="display:none">
-
   <div class="section">
     <h2>➕ Add Item | सामान थप्नुहोस्</h2>
     <input type="text" id="itemName" placeholder="Item Name / सामान" />
@@ -120,7 +122,6 @@
     <button onclick="addItem()">Add Item</button>
     <div id="itemList"></div>
   </div>
-
   <div class="section">
     <h2>📒 Customer Credit | ग्राहक ऋण</h2>
     <input type="text" id="creditCustomer" placeholder="Customer Name" />
@@ -129,7 +130,6 @@
     <button onclick="addCredit()">Add Credit</button>
     <div id="creditList"></div>
   </div>
-
   <div class="section">
     <h2>💸 Loan Section | ऋण</h2>
     <input type="number" id="loanAmount" placeholder="Loan Amount" />
@@ -138,16 +138,14 @@
     <button onclick="payLoan()">Pay Loan</button>
     <div id="loanDisplay">Total Loan: Rs <span id="loanTotal">0</span></div>
   </div>
-
   <div class="section">
     <h2>🧮 Calculator</h2>
     <button onclick="showCalculator()">Open Calculator</button>
   </div>
-
 </div>
 
 <div class="calculator-screen" id="calcScreen">
-  <input id="calcDisplay" readonly style="font-size: 2rem; text-align:center;" />
+  <input id="calcDisplay" readonly style="font-size: 2rem; text-align:center; width: 80%; margin-bottom: 10px;" />
   <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 80%; max-width: 300px;">
     <button onclick="calcInput('7')">7</button>
     <button onclick="calcInput('8')">8</button>
@@ -170,7 +168,6 @@
   </div>
 </div>
 
-<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -186,6 +183,42 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  window.addItem = async function () {
+    const name = document.getElementById("itemName").value;
+    const qty = document.getElementById("itemQty").value;
+    const price = document.getElementById("itemPrice").value;
+    const list = document.getElementById("itemList");
+    const div = document.createElement("div");
+    div.textContent = `📦 ${name} x${qty} = Rs ${price}`;
+    list.appendChild(div);
+    await addDoc(collection(db, "items"), { name, qty, price });
+  }
+
+  window.addCredit = async function () {
+    const name = document.getElementById("creditCustomer").value;
+    const item = document.getElementById("creditItemName").value;
+    const amount = document.getElementById("creditAmount").value;
+    const list = document.getElementById("creditList");
+    const div = document.createElement("div");
+    const paidBtn = document.createElement("button");
+    paidBtn.textContent = "Paid";
+    paidBtn.onclick = () => div.remove();
+    div.textContent = `👤 ${name} (${item}) owes Rs ${amount} `;
+    div.appendChild(paidBtn);
+    list.appendChild(div);
+    await addDoc(collection(db, "credits"), { name, item, amount });
+  }
+
+  let loan = 0;
+  window.addLoan = function () {
+    loan += Number(document.getElementById("loanAmount").value);
+    document.getElementById("loanTotal").textContent = loan;
+  }
+  window.payLoan = function () {
+    loan -= Number(document.getElementById("loanPaid").value);
+    document.getElementById("loanTotal").textContent = loan;
+  }
 </script>
 
 <script>
@@ -201,7 +234,6 @@
   function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
   }
-
   function showCalculator() {
     document.getElementById("calcScreen").style.display = "flex";
   }
@@ -220,40 +252,6 @@
     } catch {
       alert("Invalid input");
     }
-  }
-
-  function addItem() {
-    const name = document.getElementById("itemName").value;
-    const qty = document.getElementById("itemQty").value;
-    const price = document.getElementById("itemPrice").value;
-    const list = document.getElementById("itemList");
-    const div = document.createElement("div");
-    div.textContent = `📦 ${name} x${qty} = Rs ${price}`;
-    list.appendChild(div);
-  }
-
-  function addCredit() {
-    const name = document.getElementById("creditCustomer").value;
-    const item = document.getElementById("creditItemName").value;
-    const amount = document.getElementById("creditAmount").value;
-    const list = document.getElementById("creditList");
-    const div = document.createElement("div");
-    const paidBtn = document.createElement("button");
-    paidBtn.textContent = "Paid";
-    paidBtn.onclick = () => div.remove();
-    div.textContent = `👤 ${name} (${item}) owes Rs ${amount} `;
-    div.appendChild(paidBtn);
-    list.appendChild(div);
-  }
-
-  let loan = 0;
-  function addLoan() {
-    loan += Number(document.getElementById("loanAmount").value);
-    document.getElementById("loanTotal").textContent = loan;
-  }
-  function payLoan() {
-    loan -= Number(document.getElementById("loanPaid").value);
-    document.getElementById("loanTotal").textContent = loan;
   }
 </script>
 </body>
