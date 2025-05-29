@@ -167,22 +167,23 @@
     <button onclick="hideCalculator()" style="grid-column: span 3;">Close</button>
   </div>
 </div>
-
 <script type="module">
+  // Import Firebase SDK modules
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
-    apiKey: "AIzaSyAYIvpcSL5BAvR-pQd1b2XbYquAjy9YHjM",
-    authDomain: "yogeshshop-5099f.firebaseapp.com",
-    projectId: "yogeshshop-5099f",
-    storageBucket: "yogeshshop-5099f.appspot.com",
-    messagingSenderId: "66642396591",
-    appId: "1:66642396591:web:0ef5fb3db1fad50d49db5a"
-  };
+  apiKey: "AIzaSyXXXXXXX",
+  authDomain: "yogeshshop-5099f.firebaseapp.com",
+  projectId: "yogeshshop-5099f",
+  storageBucket: "yogeshshop-5099f.appspot.com",
+  messagingSenderId: "1234567890",
+  appId: "1:1234567890:web:abc123xyz"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 
   window.addItem = async function () {
     const name = document.getElementById("itemName").value;
